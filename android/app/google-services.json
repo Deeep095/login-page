@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353912972276",
+    "project_id": "deep-project-3",
+    "storage_bucket": "deep-project-3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353912972276:android:fbd1fdbc839274462b0fa1",
+        "android_client_info": {
+          "package_name": "com.example.untitled1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPjyPdXJRMFALM3fm4dQyuxzX6myn96_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
