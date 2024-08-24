@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Handle changes to the subject name
                       },
                       decoration: const InputDecoration(
-                          hintText: "Enter Class Monitor name"),
+                          hintText: "Enter Class monitor name"),
                     ),
                   ],
                 )),
