@@ -2,6 +2,7 @@
 // import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
+import 'package:untitled1/Views/ClassHomeScreen.dart';
 import 'package:untitled1/Views/HomeScreen.dart';
 import 'package:untitled1/Views/LoginView.dart';
 import 'package:untitled1/Views/RegisterView.dart';
@@ -31,6 +32,8 @@ void main() async {
       registerRoute: (context) => const RegisterView(),
       verifyEmailRoute: (context) => const VerifyEmailView(''),
       notesRoute:(context) => const NotesView(),
+      homeScreenRoute:(context) => const HomeScreen(),
+      classHomeScreenRoute:(context) => const ClassHomeScreen(classNumber: '', classSection: '', classSubject: '', classMonitor: '',),
     },
   ));
 }

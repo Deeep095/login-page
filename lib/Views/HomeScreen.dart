@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../Constants/routes.dart';
 import '../enums/menu_actions.dart';
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String classSection = '';
     String classSubject = '';
     String classMonitor = '';
+    String? selectedClass;
 
     showDialog(
       context: context,
@@ -44,38 +46,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemExtent: 60,
                   magnification: 1,
                   children: [
-                    TextField(
-                      onChanged: (value) {
-                        // Handle changes to the class number
-                        classNumber = value;
-                      },
-                      decoration:
-                          const InputDecoration(hintText: "Enter class number"),
+                    Row(
+                      children: [
+                        DropdownButton<String>(
+                          value: selectedClass,
+
+                          // hint: const Text('Select a class'),
+                          icon: const Icon(Icons.menu_book),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              if(newValue != null)
+                                {
+                                  selectedClass = newValue;
+                                }
+                            });
+                          },
+
+                          items: List.generate(12, (index) {
+                            return DropdownMenuItem<String>(
+                              value: (index + 1).toString(),
+                              child: Text('Class ${(index + 1).toString()}'),
+                            );
+                          }),
+                        ),
+
+
+                      ],
                     ),
-                    TextField(
-                      onChanged: (value) {
-                        classSection = value;
-                        // Handle changes to the section number
-                      },
-                      decoration: const InputDecoration(
-                          hintText: "Enter Section number"),
-                    ),
-                    TextField(
-                      onChanged: (value) {
-                        classSubject = value;
-                        // Handle changes to the subject name
-                      },
-                      decoration:
-                          const InputDecoration(hintText: "Enter Subject name"),
-                    ),
-                    TextField(
-                      onChanged: (value) {
-                        classMonitor = value;
-                        // Handle changes to the subject name
-                      },
-                      decoration: const InputDecoration(
-                          hintText: "Enter Class monitor name"),
-                    ),
+
                   ],
                 )),
           ),
@@ -92,11 +90,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (classNumber.isNotEmpty &&
                     classSection.isNotEmpty &&
                     classSubject.isNotEmpty) {
-                  print(classNumber);
-                  print(classSection);
+                  if (int.tryParse(classNumber) == null) {
+                    const AlertDialog(
+                        semanticLabel:
+                            'Please Enter a valid (int) classNumber');
+                  } else if (int.tryParse(classSection) == null) {
+                    const AlertDialog(
+                        semanticLabel:
+                            'Please Enter a valid (int) classNumber');
+                  }
                   _addClass(
                       classNumber, classSection, classSubject, classMonitor);
                   Navigator.of(context).pop();
+                } else if (classNumber.isEmpty) {
+                  const AlertDialog(
+                      semanticLabel: 'Please Enter a classNumber');
+                } else if (classSection.isEmpty) {
+                  const AlertDialog(
+                      semanticLabel: 'Please Enter a classSection');
+                } else if (classSubject.isEmpty) {
+                  const AlertDialog(
+                      semanticLabel: 'Please Enter a classSubject');
                 }
               },
             ),
@@ -126,7 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.menu, color: Colors.white),
             onPressed: () {
               // Open drawer or navigate to settings screen
-              print("Menu button pressed");
               showMenu(
                 context: context,
                 position: const RelativeRect.fromLTRB(100, 100, 100, 100),
@@ -182,86 +195,106 @@ class _HomeScreenState extends State<HomeScreen> {
             final classSubject = parts[2];
 
             return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 11.0),
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                      foregroundColor:
-                          WidgetStateProperty.all<Color>(Colors.blue),
-                      overlayColor: WidgetStateProperty.resolveWith<Color?>(
-                        (Set<WidgetState> states) {
-                          if (states.contains(WidgetState.hovered)) {
-                            return Colors.blue.withOpacity(0.1);
-                          }
-                          if (states.contains(WidgetState.focused) ||
-                              states.contains(WidgetState.pressed)) {
-                            return Colors.blue.withOpacity(0.22);
-                          }
-                          return null; // Defer to the widget's default.
-                        },
-                      ),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              12), // Use circular borders for a softer look
-                          side: const BorderSide(color: Colors.black12),
-                        ),
-                      ),
-                      fixedSize: WidgetStateProperty.all<Size>(
-                          const Size(200, 100)), // Set the size of the button
-                      elevation: WidgetStateProperty.all<double>(
-                          8), // Increase elevation for a 3D effect
-                      shadowColor: WidgetStateProperty.all<Color>(
-                          Colors.black.withOpacity(0.5)), // Shadow color
-                      backgroundColor: WidgetStateProperty.all<Color>(
-                          Colors.white), // Button background color
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 11.0),
+              child: ElevatedButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                        WidgetStateProperty.all<Color>(Colors.blue),
+                    overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.hovered)) {
+                          return Colors.blue.withOpacity(0.1);
+                        }
+                        if (states.contains(WidgetState.focused) ||
+                            states.contains(WidgetState.pressed)) {
+                          return Colors.blue.withOpacity(0.22);
+                        }
+                        return null; // Defer to the widget's default.
+                      },
                     ),
-                    onPressed: () {},
-                    child: Row(
-                      children: [
-                        // Image placeholder
-                        Container(
-                          width: 60, // Adjust size as needed
-                          height: 60, // Adjust size as needed
-                          margin: const EdgeInsets.only(
-                              right: 8.0), // Space between image and text
-                          child: Image.asset('classImage.png',
-                              fit: BoxFit
-                                  .cover), // Replace with your image asset
-                        ),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            12), // Use circular borders for a softer look
+                        side: const BorderSide(color: Colors.black12),
+                      ),
+                    ),
+                    fixedSize: WidgetStateProperty.all<Size>(
+                        const Size(200, 100)), // Set the size of the button
+                    elevation: WidgetStateProperty.all<double>(
+                        8), // Increase elevation for a 3D effect
+                    shadowColor: WidgetStateProperty.all<Color>(
+                        Colors.black.withOpacity(0.5)), // Shadow color
+                    backgroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white), // Button background color
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        classHomeScreenRoute, (route) => false);
+                  },
+                  child: Row(
+                    children: [
+                      // Image placeholder
+                      Container(
+                        width: 60, // Adjust size as needed
+                        height: 60, // Adjust size as needed
+                        margin: const EdgeInsets.only(right: 15.0),
+                        // Space between image and text
+                        child: Image.asset('assets/images/classImage.png',
+                            fit: BoxFit.cover),
 
-                        Expanded(
-                          child: RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '$classNumber\n',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                        // Replace with your image asset
+                      ),
+
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              const WidgetSpan(
+                                child: SizedBox(
+                                    height: 35.0), // Add vertical padding here
+                              ),
+                              TextSpan(
+                                text: '$classNumber\n',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const WidgetSpan(
+                                child: SizedBox(
+                                    height: 25.0), // Add vertical padding here
+                              ),
+                              TextSpan(
+                                text: 'Section: $classSection\n',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              WidgetSpan(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left:
+                                          180.0), // Adjust this value to your needs
+                                  child: Text(
+                                    'Subject: $classSubject',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                 ),
-                                TextSpan(
-                                  text: 'Section: $classSection\n',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'Subject: $classSubject',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    )));
+                      ),
+                    ],
+                  )),
+            );
           }),
           if (classes.isEmpty)
             const Center(child: Text('No classes available. Add a new class!')),
