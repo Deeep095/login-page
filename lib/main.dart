@@ -6,6 +6,7 @@ import 'package:untitled1/Views/ClassHomeScreen.dart';
 import 'package:untitled1/Views/HomeScreen.dart';
 import 'package:untitled1/Views/LoginView.dart';
 import 'package:untitled1/Views/RegisterView.dart';
+import 'package:untitled1/Views/ShowAddClassDialog.dart';
 import 'package:untitled1/Views/VerifyEmailView.dart';
 import 'package:untitled1/Views/testing.dart';
 import 'package:untitled1/services/auth/auth_service.dart';
@@ -25,7 +26,7 @@ void main() async {
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
     ),
-    home: HomeScreen(), // Add this line to specify the home screen
+    home: const HomeScreen(), // Add this line to specify the home screen
 
     routes: {
       loginRoute: (context) => const LoginView(),
@@ -34,6 +35,7 @@ void main() async {
       notesRoute:(context) => const NotesView(),
       homeScreenRoute:(context) => const HomeScreen(),
       classHomeScreenRoute:(context) => const ClassHomeScreen(classNumber: '', classSection: '', classSubject: '', classMonitor: '',),
+      showAddClassDialogRoute:(context) => const showAddClassDialog(),
     },
   ));
 }

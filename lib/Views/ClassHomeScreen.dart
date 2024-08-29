@@ -24,7 +24,7 @@ class _ClassHomeScreenState extends State<ClassHomeScreen> {
     return Scaffold(
         appBar: AppBar(
       title: const Text(
-        '',
+        'OMG',
         style: TextStyle(color: Colors.white),
       ),
           backgroundColor: Colors.indigoAccent,
