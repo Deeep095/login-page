@@ -7,7 +7,7 @@ import 'package:untitled1/Constants/routes.dart';
 import 'package:untitled1/Utilities/showErrorDialog.dart';
 import 'package:untitled1/services/auth/auth_service.dart';
 
-import '../services/auth/auth_excepions.dart'; // personalizing the log in-build function as devtools.log
+import '../../services/auth/auth_excepions.dart'; // personalizing the log in-build function as devtools.log
 
 
 class RegisterView extends StatefulWidget {
@@ -84,7 +84,7 @@ class _RegisterViewState extends State<RegisterView> {
                 final password = _password.text;
 
                 if (isValidPassword(password) && isValidEmail(email)) {
-                  await AuthServices.firebase().createUser(email: email, password: password);
+                  await AuthServices.firebase().createUser(email: email, password: password, role: 'teacher');
                   final user = AuthServices.firebase().currentUser;
                   devtools.log(AuthServices.firebase().currentUser.toString());
                   devtools.log(user.toString());

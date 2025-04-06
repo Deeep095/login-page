@@ -9,19 +9,11 @@ class AuthServices implements AuthProvider {
 
   factory AuthServices.firebase() => AuthServices(FirebaseAuthProvider());
 
+
   @override
   AuthUser? get currentUser => provider.currentUser;
-
-  // @override
-  // Future<AuthUser> logIn({
-  //   required String email,
-  //   required String password,
-  // }) =>
-  //     provider.logIn(
-  //       email: email,
-  //       password: password,
-  //     );
-
+  @override
+  Future<AuthUser?> get currentAuthUser => provider.currentAuthUser;
   @override
   Future<void> initialize() => provider.initialize();
 
@@ -39,23 +31,31 @@ class AuthServices implements AuthProvider {
   Future<AuthUser> createUser({
     required String email,
     required String password,
+    required String role,
   }) =>
       provider.createUser(
         email: email,
         password: password,
+        role: role,
       );
 
   static String? get_email_id() {
     return FirebaseAuthProvider.get_email_id();
   }
 
+
   @override
   Future<AuthUser> logIn({
     required String email,
     required String password,
+    required String role,
   }) =>
       provider.logIn(
         email: email,
         password: password,
+        role : role,
       );
+
+
+
 }

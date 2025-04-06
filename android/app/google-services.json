@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "353912972276",
+    "firebase_url": "https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "deep-project-3",
-    "storage_bucket": "deep-project-3.appspot.com"
+    "storage_bucket": "deep-project-3.firebasestorage.app"
   },
   "client": [
     {

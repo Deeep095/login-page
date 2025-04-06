@@ -1,27 +1,46 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:untitled1/firebase_options.dart';
+import 'package:untitled1/services/auth/auth_service.dart';
 
 import 'auth_user.dart';
 import 'auth_provider.dart';
 import 'auth_excepions.dart';
 
 import 'package:firebase_auth/firebase_auth.dart'
-    show FirebaseAuth, FirebaseAuthException;
+    show FirebaseAuth, FirebaseAuthException, User;
 
 class FirebaseAuthProvider implements AuthProvider {
+  int ID_incrementer = 0;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   Future<AuthUser> createUser({
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final user = currentUser;
-      if (user != null) {
-        return user;
+      final user = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final user2 = FirebaseAuth.instance.currentUser;
+      if (user2 != null) {
+        // Save the user's role in Firestore
+
+        ID_incrementer++;
+        await _firestore.collection("users").doc(user2.uid).set({
+          'id': ID_incrementer,
+          'email': email,
+          'password': password,
+          'role': role,
+        });
+        print("email = $email   role = $role");
+        // Return the created user with the role
+        return AuthUser(
+          id: user2.uid,
+          email: user2.email as String,
+          isEmailVerified: user2.emailVerified,
+          role: role, // Pass the role as an argument
+        );
       } else {
         throw UsrNotLoggedInAuthException();
       }
@@ -36,23 +55,58 @@ class FirebaseAuthProvider implements AuthProvider {
         throw GenericAuthException();
       }
     } catch (e) {
-      print("e is $e");
       throw GenericAuthException();
     }
   }
 
   @override
   AuthUser? get currentUser {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return AuthUser.fromFirebase(user);
-    } else {
-      return null;
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser != null) {
+      // Fetch role from Firestore
+      return AuthUser.fromFirebase(firebaseUser, role: 'student');
     }
+    return null;
+    // final user = FirebaseAuth.instance.currentUser;
+    // if (user != null) {
+    //
+    //   // Fetch the role from Firestore
+    //   return _getUserFromFirebase(user) as AuthUser;
+    // } else {
+    //   return null;
+    // }
   }
 
-  static String? get_email_id()
-  {
+  @override
+  Future<AuthUser?> get currentAuthUser async {
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser != null) {
+      // Fetch role from Firestore
+      String role = await getUserRole(firebaseUser.uid);
+      return AuthUser.fromFirebase(firebaseUser, role: role);
+    }
+    return null;
+    // final user = FirebaseAuth.instance.currentUser;
+    // if (user != null) {
+    //
+    //   // Fetch the role from Firestore
+    //   return _getUserFromFirebase(user) as AuthUser;
+    // } else {
+    //   return null;
+    // }
+  }
+
+  Future<String> getUserRole(String userId) async {
+    var userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.exists
+        ? userDoc['role'] as String
+        : 'student'; // Default to student
+  }
+
+  static String? get_email_id() {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       return user.email.toString();
@@ -61,18 +115,28 @@ class FirebaseAuthProvider implements AuthProvider {
   }
 
   @override
-  Future<AuthUser> logIn ( {
+  Future<AuthUser> logIn({
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final user2 = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = currentUser;
+      final user = user2.user;
+
       if (user != null) {
-        return user;
+        final userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        final fetchedRole =
+            userDoc.data()?['role'] ?? 'student'; // Default to 'student'
+
+        print("Fetched role from Firestore: $fetchedRole");
+
+        // Pass the role to the AuthUser constructor and return
+        return AuthUser.fromFirebase(user, role: fetchedRole);
       } else {
         throw UsrNotLoggedInAuthException();
       }
@@ -91,6 +155,7 @@ class FirebaseAuthProvider implements AuthProvider {
       //
       // }
       else {
+        print("                   e.code          ===== ${e.code}");
         throw GenericAuthException();
       }
     } catch (e) {
@@ -101,13 +166,12 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<void> initialize() async {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-    );
+        options: DefaultFirebaseOptions.currentPlatform);
   }
 
   @override
   Future<void> logOut() async {
-    await FirebaseAuth.instance.signOut();
+      await FirebaseAuth.instance.signOut();
   }
 
   @override

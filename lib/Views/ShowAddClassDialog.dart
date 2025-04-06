@@ -137,7 +137,7 @@ class ShowAddClassDialog extends State<showAddClassDialog>
                         semanticLabel:
                         'Please Enter a valid (int) classNumber');
                   }
-                  SingleClassroom Classroom = new SingleClassroom();
+                  SingleClassroom Classroom = SingleClassroom();
                   Classroom.addClass(classNumber, classSection, classSubject, classMonitor);
                   Navigator.of(context).pop();
                 } else if (classNumber.isEmpty) {

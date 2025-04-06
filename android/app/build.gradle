@@ -9,7 +9,13 @@ plugins {
 }
 dependencies {
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+//    implementation ('com.google.android.gms:play-services-providerinstaller:17.0.0')
+//    implementation ('com.google.android.gms:play-services-location:21.3.0')
+    implementation ('com.google.android.gms:play-services-basement:18.5.0')
+    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+    implementation ('com.google.android.gms:play-services-base:18.5.0')
+    implementation ('com.google.firebase:firebase-database:21.0.0')
+
 }
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -32,7 +38,7 @@ if (flutterVersionName == null) {
 android {
     namespace = "com.example.untitled1"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -44,16 +50,16 @@ android {
         applicationId = "com.example.untitled1"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-//        minSdk = flutter.minSdkVersion
-//        targetSdk = flutter.targetSdkVersion
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
         minSdkVersion 23
         targetSdkVersion 33
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
 
 
-//        versionCode 1
-//        versionName "1.0"
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {

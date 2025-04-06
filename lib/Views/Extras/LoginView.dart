@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/Constants/routes.dart';
 import 'package:untitled1/services/auth/auth_service.dart';
-import 'package:untitled1/services/auth/auth_user.dart';
 import 'dart:developer' as devtools
     show log; // personalizing the log in-build function as devtools.log
 
-import '../Utilities/showErrorDialog.dart';
+import '../../Utilities/showErrorDialog.dart';
 
-import 'package:untitled1/Utilities/showErrorDialog.dart';
 
-import '../services/auth/auth_excepions.dart';
+import '../../services/auth/auth_excepions.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -88,14 +86,14 @@ class _MyAppLoginState extends State<LoginView> {
               final password = _password.text;
 
               try {
-                final user = AuthServices.firebase().logIn(email: email, password: password);
+                final user = AuthServices.firebase().logIn(email: email, password: password, role: 'teacher');
                 print(AuthServices.firebase().currentUser?.isEmailVerified);
                 if (AuthServices.firebase().currentUser!.isEmailVerified) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Successfully logged in')),
                   );
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute,
+                    homeScreenRoute,
                     (route) => false,
                   );
                 } else {

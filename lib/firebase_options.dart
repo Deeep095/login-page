@@ -46,7 +46,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '353912972276',
     projectId: 'deep-project-3',
     authDomain: 'deep-project-3.firebaseapp.com',
-    storageBucket: 'deep-project-3.appspot.com',
+    databaseURL: 'https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'deep-project-3.firebasestorage.app',
+    measurementId: 'G-LZHB1WLB7E',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -54,7 +56,8 @@ class DefaultFirebaseOptions {
     appId: '1:353912972276:android:fbd1fdbc839274462b0fa1',
     messagingSenderId: '353912972276',
     projectId: 'deep-project-3',
-    storageBucket: 'deep-project-3.appspot.com',
+    databaseURL: 'https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'deep-project-3.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +65,8 @@ class DefaultFirebaseOptions {
     appId: '1:353912972276:ios:82f23dce6685a3f22b0fa1',
     messagingSenderId: '353912972276',
     projectId: 'deep-project-3',
-    storageBucket: 'deep-project-3.appspot.com',
+    databaseURL: 'https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'deep-project-3.firebasestorage.app',
     iosBundleId: 'com.example.untitled1',
   );
 
@@ -71,7 +75,8 @@ class DefaultFirebaseOptions {
     appId: '1:353912972276:ios:82f23dce6685a3f22b0fa1',
     messagingSenderId: '353912972276',
     projectId: 'deep-project-3',
-    storageBucket: 'deep-project-3.appspot.com',
+    databaseURL: 'https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'deep-project-3.firebasestorage.app',
     iosBundleId: 'com.example.untitled1',
   );
 
@@ -81,7 +86,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '353912972276',
     projectId: 'deep-project-3',
     authDomain: 'deep-project-3.firebaseapp.com',
-    storageBucket: 'deep-project-3.appspot.com',
+    databaseURL: 'https://deep-project-3-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'deep-project-3.firebasestorage.app',
+    measurementId: 'G-SVD2N3FTFC',
   );
 
 }

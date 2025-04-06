@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "frontend": "deep-project-3",
+    "default": "deep-project-3"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}
