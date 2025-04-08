@@ -1,0 +1,230 @@
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+
+class VideoTransformationScreen extends StatefulWidget {
+  final String originalVideoUrl;
+
+  const VideoTransformationScreen({
+    Key? key,
+    required this.originalVideoUrl,
+  }) : super(key: key);
+
+  @override
+  _VideoTransformationScreenState createState() =>
+      _VideoTransformationScreenState();
+}
+
+class _VideoTransformationScreenState extends State<VideoTransformationScreen> {
+  late VideoPlayerController _videoController;
+  bool _isShowingOriginal = true;
+  String? _transformedVideoUrl;
+
+  // Default values for transformation parameters
+  double _duration = 13.0;
+  int _maxNoSeg = 6;
+  double _minSegDuration = 2.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeVideo(widget.originalVideoUrl);
+  }
+
+  void _initializeVideo(String videoUrl) {
+    _videoController = VideoPlayerController.network(videoUrl)
+      ..initialize().then((_) {
+        setState(() {});
+        _videoController.play();
+      });
+  }
+
+  void _switchVideo() {
+    if (_transformedVideoUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please optimize the video first!")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isShowingOriginal = !_isShowingOriginal;
+      _videoController.pause();
+      _initializeVideo(
+          _isShowingOriginal ? widget.originalVideoUrl : _transformedVideoUrl!);
+    });
+  }
+
+  void _optimizeVideo() {
+    // Construct the transformation string dynamically
+    String transformationString =
+        "e_preview:duration_${_duration.toStringAsFixed(1)}:max_seg_$_maxNoSeg:min_seg_dur_${_minSegDuration.toStringAsFixed(1)}";
+
+    setState(() {
+      _transformedVideoUrl = widget.originalVideoUrl.replaceFirst(
+        '/upload/',
+        '/upload/$transformationString/',
+      );
+      print("Transformed URL: $_transformedVideoUrl");
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Video optimized successfully!")),
+    );
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Video Transformation"),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _videoController.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _videoController.value.aspectRatio,
+                    child: VideoPlayer(_videoController),
+                  )
+                : const Center(child: CircularProgressIndicator()),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _isShowingOriginal ? "Original Video" : "Transformed Video",
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: _optimizeVideo,
+                child: const Text("Optimize"),
+              ),
+              ElevatedButton(
+                onPressed: _switchVideo,
+                child: Text(
+                  _isShowingOriginal
+                      ? "Switch to Transformed Video"
+                      : "Switch to Original Video",
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Set Transformation Parameters:",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  double? newDuration = await _showInputDialog(
+                    context,
+                    "Set Duration",
+                    _duration,
+                  );
+                  if (newDuration != null) {
+                    setState(() {
+                      _duration = newDuration;
+                    });
+                  }
+                },
+                child: Text("Duration: ${_duration.toStringAsFixed(1)}"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  double? n = await _showInputDialog(
+                    context,
+                    "Set Max No. of Segments",
+                    _maxNoSeg.toDouble(),
+                  );
+                  int? newMaxNoSeg = n?.toInt();
+                  if (newMaxNoSeg != null) {
+                    setState(() {
+                      _maxNoSeg = newMaxNoSeg;
+                    });
+                  }
+                },
+                child: Text("Max Seg: $_maxNoSeg"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  double? newMinSegDuration = await _showInputDialog(
+                    context,
+                    "Set Min Segment Duration",
+                    _minSegDuration,
+                  );
+                  if (newMinSegDuration != null) {
+                    setState(() {
+                      _minSegDuration = newMinSegDuration;
+                    });
+                  }
+                },
+                child: Text("Min Seg Dur: ${_minSegDuration.toStringAsFixed(1)}"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  
+                },
+                child: const Text("LiveStream"),
+              ),
+            ],
+          ),
+
+
+          const SizedBox(height: 30),
+          Text(
+            "Transformation String: e_preview:duration_${_duration.toStringAsFixed(1)}:max_seg_$_maxNoSeg:min_seg_dur_${_minSegDuration.toStringAsFixed(1)}",
+            style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<double?> _showInputDialog(
+      BuildContext context, String title, double currentValue) async {
+    TextEditingController controller =
+        TextEditingController(text: currentValue.toString());
+    return showDialog<double>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(hintText: "Enter value"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, double.tryParse(controller.text));
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+}

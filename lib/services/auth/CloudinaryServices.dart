@@ -46,7 +46,7 @@ Future<bool> uploadToCloudinary(
   String cloudName = dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
 
   // Create a MultipartRequest to upload the file
-  var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/raw/upload");
+  var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/upload");
   var request = http.MultipartRequest("POST", uri);
 
   Uint8List? fileBytes = filePickerResult.files.first.bytes;
@@ -61,7 +61,7 @@ Future<bool> uploadToCloudinary(
   request.files.add(multipartFile);
 
   request.fields['upload_preset'] = "preset-for-file-upload";
-  request.fields['resource_type'] = "raw";
+  request.fields['resource_type'] = "auto";
 
   // Send the request and await the response
   var response = await request.send();
@@ -112,7 +112,7 @@ Future<bool> deleteFromCloudinary(String publicId) async {
   String signature = digest.toString();
   // Prepare the request URL
   var uri =
-      Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/raw/destroy/');
+      Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/raw/destroy');
 
   // Create the request
   var response = await http.post(

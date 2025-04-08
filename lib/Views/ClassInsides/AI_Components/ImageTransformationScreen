@@ -1,0 +1,245 @@
+import 'package:flutter/material.dart';
+
+class ImageTransformationScreen extends StatefulWidget {
+  final String originalImageUrl;
+
+  const ImageTransformationScreen({
+    Key? key,
+    required this.originalImageUrl,
+  }) : super(key: key);
+
+  @override
+  _ImageTransformationScreenState createState() =>
+      _ImageTransformationScreenState();
+}
+
+class _ImageTransformationScreenState extends State<ImageTransformationScreen> {
+  String? _transformedImageUrl;
+
+  // Default values for transformation parameters
+  String _aspectRatio = "1:1";
+  String _cropMode = "c_pad";
+  String _background = "b_gen_fill";
+  String _width = "800";
+  String _height = "700";
+  String _gravity = "g_south_west";
+
+  @override
+  void initState() {
+    super.initState();
+    _transformedImageUrl = widget.originalImageUrl;
+  }
+
+  void _applyTransformation() {
+    // Construct the transformation string dynamically
+    String transformationString =
+        "$_cropMode,w_$_width,h_$_height,ar_$_aspectRatio,$_gravity,$_background";
+
+    setState(() {
+      _transformedImageUrl = widget.originalImageUrl.replaceFirst(
+        '/upload/',
+        '/upload/$transformationString/',
+      );
+      print("Transformed URL: $_transformedImageUrl");
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Image transformed successfully!")),
+    );
+  }
+
+  Future<String?> _showInputDialog(
+      BuildContext context, String title, String currentValue) async {
+    TextEditingController controller =
+        TextEditingController(text: currentValue);
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: "Enter value"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, null),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, controller.text);
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Future<void> _downloadTransformedImage() async {
+    if (_transformedImageUrl != null) {
+      // final Uri url = Uri.parse(_transformedImageUrl!);
+      // if (await canLaunchUrl(url)) {
+      //   await launchUrl(url, mode: LaunchMode.externalApplication);
+      // } else {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text("Could not launch URL")),
+      //   );
+      // }
+
+      // Cloudi
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No transformed image available to download!")),
+      );
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Image Transformation"),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _transformedImageUrl != null
+                ? Image.network(_transformedImageUrl!)
+                : const Center(child: CircularProgressIndicator()),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Set Transformation Parameters:",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  String? newAspectRatio = await _showInputDialog(
+                    context,
+                    "Set Aspect Ratio (e.g., 1:1, 16:9)",
+                    _aspectRatio,
+                  );
+                  if (newAspectRatio != null) {
+                    setState(() {
+                      _aspectRatio = newAspectRatio;
+                    });
+                  }
+                },
+                child: Text("Aspect Ratio: $_aspectRatio"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String? newCropMode = await _showInputDialog(
+                    context,
+                    "Set Crop Mode (e.g., c_pad, c_fill)",
+                    _cropMode,
+                  );
+                  if (newCropMode != null) {
+                    setState(() {
+                      _cropMode = newCropMode;
+                    });
+                  }
+                },
+                child: Text("Crop Mode: $_cropMode"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String? newBackground = await _showInputDialog(
+                    context,
+                    "Set Background (e.g., b_gen_fill, b_white)",
+                    _background,
+                  );
+                  if (newBackground != null) {
+                    setState(() {
+                      _background = newBackground;
+                    });
+                  }
+                },
+                child: Text("Background: $_background"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Generative Fill",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  String? newWidth = await _showInputDialog(
+                    context,
+                    "Set Width (e.g., 800)",
+                    _width,
+                  );
+                  if (newWidth != null) {
+                    setState(() {
+                      _width = newWidth;
+                    });
+                  }
+                },
+                child: Text("Width: $_width"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String? newHeight = await _showInputDialog(
+                    context,
+                    "Set Height (e.g., 700)",
+                    _height,
+                  );
+                  if (newHeight != null) {
+                    setState(() {
+                      _height = newHeight;
+                    });
+                  }
+                },
+                child: Text("Height: $_height"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  String? newGravity = await _showInputDialog(
+                    context,
+                    "Set Gravity (e.g., g_center, g_south_west)",
+                    _gravity,
+                  );
+                  if (newGravity != null) {
+                    setState(() {
+                      _gravity = newGravity;
+                    });
+                  }
+                },
+                child: Text("Gravity: $_gravity"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _applyTransformation,
+            child: const Text("Apply Transformation"),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _downloadTransformedImage,
+            child: const Text("Download Transformed Image"),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Transformation String: $_cropMode,w_$_width,h_$_height,ar_$_aspectRatio,$_gravity,$_background",
+            style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}

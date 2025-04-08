@@ -1,7 +1,6 @@
 //
 // import 'dart:js_interop';
 
-import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,9 +11,7 @@ import 'package:untitled1/Views/HomeScreen.dart';
 import 'package:untitled1/Views/Extras/LoginView.dart';
 import 'package:untitled1/Views/Extras/RegisterView.dart';
 import 'package:untitled1/Views/ShowAddClassDialog.dart';
-import 'package:untitled1/Views/SideMenu.dart';
 import 'package:untitled1/Views/VerifyEmailView.dart';
-import 'package:untitled1/Views/testing.dart';
 import 'package:untitled1/services/auth/auth_service.dart';
 import 'dart:developer' as devtools
     show log; // personalizing the log in-build function as devtools.log
@@ -22,8 +19,8 @@ import 'Constants/routes.dart';
 import 'Views/ClassInfoProvider.dart';
 import 'Views/OnBoardingScreen.dart';
 import 'Views/notes_view.dart';
-import 'package:google_api_availability/google_api_availability.dart';
-import 'package:provider/provider.dart';
+// import 'package:google_api_availability/google_api_availability.dart';
+// import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -90,7 +87,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const OnBoardingScreen(),
       routes: {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),

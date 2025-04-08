@@ -6,9 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:untitled1/Backend/ClassModel.dart'; // Adjust the import path
 import 'package:untitled1/Constants/routes.dart';
+import 'package:untitled1/Views/ClassInsides/AI_Components/ImageTransformationScreen';
+import 'package:untitled1/Views/ClassInsides/AI_Components/VideoTransformationScreen';
 import 'package:untitled1/Views/ClassInsides/Components/PreviewPDF.dart';
 import 'package:untitled1/Views/ClassInsides/Components/PreviewVideo.dart';
 import 'package:untitled1/Views/ClassInsides/Components/previewImage.dart';
+import 'package:untitled1/services/auth/CloudinaryAiServices.dart';
 import 'package:untitled1/services/auth/CloudinaryServices.dart';
 import 'package:untitled1/services/auth/DatabaseServices.dart';
 import 'package:untitled1/services/auth/auth_service.dart';
@@ -69,7 +72,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
             } else {
               return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, // Number of columns in the grid
+                    crossAxisCount: 2, // Number of columns in the grid
                     childAspectRatio: 1, // Aspect ratio for each grid item
                     crossAxisSpacing: 8, // Spacing between columns
                     mainAxisSpacing: 8, // Spacing between rows
@@ -81,7 +84,8 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                     String publicId = userUploadedFiles[index]["id"];
                     String fileUrl = userUploadedFiles[index]["url"];
                     String uploadDate = userUploadedFiles[index]["created_at"];
-                    String description = userUploadedFiles[index]["description"];
+                    String description =
+                        userUploadedFiles[index]["description"];
                     return GestureDetector(
                       onLongPress: () {
                         showDialog(
@@ -167,12 +171,12 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                             ),
                           );
                         } else if (ext == "pdf") {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PreviewPdf(pdfUrl: fileUrl),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => PreviewPdf(pdfUrl: fileUrl),
+                          //   ),
+                          // );
                         } else {
                           Navigator.push(
                               context,
@@ -210,7 +214,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                                                 ext == "jpg" ||
                                                 ext == "jpeg"
                                             ? Icons.image
-                                            : Icons.movie),
+                                            : Icons.picture_as_pdf),
                                         const SizedBox(
                                           width: 10,
                                         ),
@@ -322,29 +326,72 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
                                                     onPressed: () async {
                                                       Navigator.pop(
                                                           context); // Close the dialog
-                                                      final optimizedUrl =
-                                                          await optimizeImage(
-                                                              fileUrl);
-                                                      if (optimizedUrl !=
-                                                          null) {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                PreviewImage(
-                                                                    url:
-                                                                        optimizedUrl),
+                                                      
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ImageTransformationScreen(
+                                                            originalImageUrl:
+                                                                fileUrl,
                                                           ),
-                                                        );
-                                                      } else {
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(
-                                                          const SnackBar(
-                                                              content: Text(
-                                                                  "Failed to optimize image")),
-                                                        );
-                                                      }
+                                                        ),
+                                                      );
+
+                                                      // Navigator.pop(
+                                                      //     context); // Close the dialog
+                                                    },
+                                                    child:
+                                                        const Text("Optimize"),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          } else if (ext == "mkv" ||
+                                              ext == "mp4") {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text(
+                                                    "Optimize Video"),
+                                                content: const Text(
+                                                    "Do you want to optimize this video or preview it first?"),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PreviewVideo(
+                                                                  videoUrl:
+                                                                      fileUrl),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child:
+                                                        const Text("Preview"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () async {
+                                                      Navigator.pop(
+                                                          context); // Close the dialog
+
+                                                      await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              VideoTransformationScreen(
+                                                            originalVideoUrl:
+                                                                fileUrl,
+                                                          ),
+                                                        ),
+                                                      );
+
+                                                      // Navigator.pop(
+                                                      //     context); // Close the dialog
                                                     },
                                                     child:
                                                         const Text("Optimize"),
@@ -387,121 +434,3 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
     );
   }
 }
-
-// class _ClassDetailScreenState extends State<ClassDetailScreen> {
-
-//   // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//   // Cloudinary cloudinary = Cloudinary.fromCloudName(cloudName: "dx8ahnwte");
-//   // // Cloudinary credentials
-//   // final String cloudName = "dx8ahnwte";
-//   // final String apiKey = "524689985356355";
-//   // // final String apiSecret = "YOUR_CLOUDINARY_API_SECRET";
-
-//   // final CloudinaryPublic _cloudinary =
-//   //     CloudinaryPublic("dx8ahnwte", "ojelbqu4", cache: false);
-//   // List<Map<String, String>> uploadedFiles = []; // Store uploaded file details
-
-// //  // Function to pick and upload a file
-//   // Future<void> _uploadFile() async {
-//   //   FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-//   //   if (result != null && result.files.single.bytes != null) {
-//   //     try {
-//   //       String filePath = result.files.single.path!;
-//   //       // Upload file to Cloudinary
-//   //       CloudinaryResponse response = await _cloudinary.uploadFile(
-//   //         CloudinaryFile.fromFile(
-//   //           filePath,
-//   //           folder: "class_files",
-//   //           resourceType: CloudinaryResourceType.Auto,
-//   //         ),
-//   //       );
-
-//   //       // Store uploaded file locally
-//   //       setState(() {
-//   //         uploadedFiles.add({
-//   //           "name": result.files.single.name,
-//   //           "url": response.secureUrl, // ✅ Cloudinary URL
-//   //         });
-//   //       });
-
-//   //       ScaffoldMessenger.of(context).showSnackBar(
-//   //         SnackBar(
-//   //             content:
-//   //                 Text("${result.files.single.name} uploaded successfully!")),
-//   //       );
-//   //     } catch (e) {
-//   //       print("Upload Error: $e");
-//   //     }
-//   //   }
-//   // }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(widget.classModel.className),
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Text(
-//               "Class: ${widget.classModel.className}",
-//               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Text(
-//               "Section: ${widget.classModel.section}",
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Text(
-//               "Subject: ${widget.classModel.subject}",
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//           ),
-//           const SizedBox(height: 20),
-//           Center(
-//             child: ElevatedButton.icon(
-//               onPressed: _uploadFile,
-//               icon: const Icon(Icons.upload_file),
-//               label: const Text("Upload File"),
-//             ),
-//           ),
-//           const SizedBox(height: 20),
-//           Expanded(
-//             child: uploadedFiles.isEmpty
-//                 ? const Center(child: Text("No files uploaded yet."))
-//                 : ListView.builder(
-//                     itemCount: uploadedFiles.length,
-//                     itemBuilder: (context, index) {
-//                       Map<String, String> file = uploadedFiles[index];
-//                       return ListTile(
-//                         title: Text(file["name"]!),
-//                         subtitle: Text(file["url"]!),
-//                         trailing: IconButton(
-//                           icon: const Icon(Icons.download),
-//                           onPressed: () async {
-//                             final Uri _url = Uri.parse(file["url"]!);
-//                             if (await canLaunchUrl(_url)) {
-//                               await launchUrl(_url);
-//                             } else {
-//                               throw 'Could not open file: ${file["url"]}';
-//                             }
-//                           },
-//                         ),
-//                       );
-//                     },
-//                   ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

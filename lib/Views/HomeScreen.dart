@@ -87,6 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final classInfoProvider = Provider.of<ClassInfoProvider>(context);
+    if(classInfoProvider == null)
+    {
+      return const Center(child: Text("provider is not found"));
+    }
     final getClasses = classInfoProvider.classes;
 
     return Scaffold(
